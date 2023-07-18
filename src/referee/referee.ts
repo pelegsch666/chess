@@ -1,6 +1,5 @@
 export default class Referee { 
-    isValidMove() {
-        console.log('refree is checking the move')
+    isValidMove(px:number,py:number ,x: number,y: number, type: ) {
         return true;
     }
 }
