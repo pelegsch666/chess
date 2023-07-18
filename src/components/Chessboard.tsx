@@ -1,6 +1,8 @@
 import {  useRef, useState } from 'react';
 import './Chessboard.css';
 import Tile from './Tile/Tile';
+import Referee from '../referee/referee'; 
+
 const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
 const horizontalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
@@ -54,7 +56,7 @@ const Chessboard = () => {
   const [gridY, setGridY] = useState<number>(0);
   const [pieces, setPieces] = useState<Piece[]>(initialBoardState);
   const chessboardRef = useRef<HTMLDivElement>(null);
-
+  const referee = new Referee();
  
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -70,7 +72,7 @@ const Chessboard = () => {
       element.style.position = 'absolute';
       element.style.left = `${x}px`;
       element.style.top = `${y}px`;
-      activePiece = element;
+      setActivePiece(element)
     }
   }
 
@@ -108,7 +110,9 @@ const Chessboard = () => {
       const x = Math.floor((e.clientX - chessboard.offsetLeft) / 100);
 
       const y = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100));
-  
+      
+      referee.isValidMove()
+      //Updates the piece postion
       setPieces(value => {
         const pieces = value.map(p => {
           if (p.x === gridX && p.y === gridY) {
@@ -119,7 +123,7 @@ const Chessboard = () => {
         });
         return pieces;
       });
-      activePiece = null;
+      setActivePiece(null)
     }
   }
 
