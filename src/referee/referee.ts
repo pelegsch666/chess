@@ -9,7 +9,19 @@ export default class Referee {
       return false;
     }
   }
-
+  TileIsOccupiedByOpponent(
+    x: number,
+    y: number,
+    team: TeamType,
+    boardState: Piece[]
+  ): boolean {
+    const piece = boardState.find(p => p.x === x && p.y === y);
+    if (piece && piece.team !== team) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   isValidMove(
     px: number,
     py: number,
@@ -22,37 +34,35 @@ export default class Referee {
     console.log(
       `prev: ${px},${py} next: ${x},${y} type: ${type} tean: ${team}`
     );
-
     if (type === PieceType.PAWN) {
-      if (team === TeamType.OURTEAM) {
-        if (py === 1) {
-          if (px === x && (y - py === 1 || y - py === 2)) {
-            if (!this.tileIsOccupied(x, y, boardState)) {
-              return true;
-            }
-            return true;
-          }
-        } else {
-          if (px === x && y - py === 1) {
-            if (!this.tileIsOccupied(x, y, boardState)) {
-              return true;
-            }
-            return true;
-          }
+      const specialRow = team === TeamType.OURTEAM ? 1 : 6;
+      const pawnDirection = team === TeamType.OURTEAM ? 1 : -1;
+      // movement logic
+      if (px === x && py === specialRow && y - py === 2 * pawnDirection) {
+        if (
+          !this.tileIsOccupied(x, y, boardState) &&
+          !this.tileIsOccupied(x, y - pawnDirection, boardState)
+        ) {
+          return true;
         }
-      } else {
-        if (py === 6) {
-          if ((px === x && y - py === -1) || y - py === -2) {
-            console.log('valid move');
-            return true;
-          }
-        } else {
-          if (px === x && y - py === -1) {
-            return true;
-          }
+      } else if (px === x && y - py === pawnDirection) {
+        if (!this.tileIsOccupied(x, y, boardState)) {
+          return true;
         }
       }
+      // Attack Logic
+      else if (x - px === -1 && y - py === pawnDirection) {
+        //Attack in upper or bottom left
+        console.log('Attack in upper or bottom left');
+        if(!this.TileIsOccupiedByOpponent(x, y, team, boardState)){
+         console.log('We can strike the enemy')
+        }
+      } else if (x - px === 1 && y - py === pawnDirection) {
+        //Attack in upper or bottom right
+        console.log('Attack in upper or bottom right');
+      }
     }
+
     return false;
   }
 }
